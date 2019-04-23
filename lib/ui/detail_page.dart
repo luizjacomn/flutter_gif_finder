@@ -3,6 +3,7 @@ import 'package:share/share.dart';
 
 class DetailPage extends StatelessWidget {
   final _black = Colors.black;
+  final _yellow = Colors.yellow;
   final Map _gifData;
 
   final _imagesKey = 'images';
@@ -15,7 +16,6 @@ class DetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     final url = _gifData[_imagesKey][_aspectKey][_imageUrlKey];
 
     return Scaffold(
@@ -25,7 +25,11 @@ class DetailPage extends StatelessWidget {
         backgroundColor: _black,
         actions: <Widget>[
           IconButton(
-            icon: Icon(_shareIcon),
+            tooltip: 'Compartilhar',
+            icon: Icon(
+              _shareIcon,
+              color: _yellow,
+            ),
             onPressed: () {
               Share.share(url);
             },
