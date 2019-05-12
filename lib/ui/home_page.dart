@@ -1,10 +1,15 @@
+import 'dart:io';
 import 'dart:convert';
+import 'dart:typed_data';
 
-import 'package:transparent_image/transparent_image.dart';
-import 'package:share/share.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_gif_finder/ui/detail_page.dart';
 import 'package:http/http.dart' as http;
+import 'package:esys_flutter_share/esys_flutter_share.dart';
+import 'package:transparent_image/transparent_image.dart';
+
 
 class HomePage extends StatefulWidget {
   @override
@@ -50,6 +55,14 @@ class _HomePageState extends State<HomePage> {
           .get('$_baseUri/trending?api_key=$_apiKey&limit=20&rating=$_rating');
 
     return json.decode(response.body);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: Colors.blueGrey[400], // status bar color
+    ));
   }
 
   @override
@@ -147,8 +160,11 @@ class _HomePageState extends State<HomePage> {
                         builder: (context) =>
                             DetailPage(snapshot.data[_dataKey][index])));
               },
-              onLongPress: () {
-                Share.share(url);
+              onLongPress: () async {
+                var request = await HttpClient().getUrl(Uri.parse(url));
+                var response = await request.close();
+                Uint8List bytes = await consolidateHttpClientResponseBytes(response);
+                await Share.file('Gif from Gif Finder', 'gif-finder.gif', bytes, 'image/gif');
               },
               child: FadeInImage.memoryNetwork(
                 placeholder: kTransparentImage,
